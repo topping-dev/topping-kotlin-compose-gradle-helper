@@ -87,9 +87,9 @@ publishing {
                     }
                 }
                 scm {
-                    connection = 'scm:git:github.com/topping-dev/topping-android.git'
-                    developerConnection = 'scm:git:ssh://github.com/topping-dev/topping-android.git'
-                    url = 'https://github.com/topping-dev/topping-android/tree/main'
+                    connection = 'scm:git:github.com/topping-dev/topping-kotlin-compose-gradle-helper.git'
+                    developerConnection = 'scm:git:ssh://github.com/topping-dev/topping-kotlin-compose-gradle-helper.git'
+                    url = 'https://github.com/topping-dev/topping-kotlin-compose-gradle-helper/tree/master'
                 }
                 withXml {
                     /*def dependenciesNode = asNode().appendNode('dependencies')
