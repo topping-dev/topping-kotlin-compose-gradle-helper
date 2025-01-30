@@ -19,6 +19,8 @@ import java.io.File
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.reflect.KClass
 
+val IS_DEBUG = false
+
 class HelperPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         project.plugins.all {
@@ -57,13 +59,10 @@ class HelperPlugin : Plugin<Project> {
 
     private fun configureLRGeneration(project: Project, variants: DomainObjectSet<out BaseVariant>) {
         variants.all { variant ->
-            //val rPackage = getPackageName(variant)
             val rPackage = variant.mergedFlavor.applicationId
-            //println("packagename " + variant.mergedFlavor.applicationId)
             val packagePath = rPackage.replace(".", File.separator)
             val outputDir = project.buildDir.resolve(
                 "generated/source/lr/${variant.dirName}/$packagePath")
-            //println("outputdir " + outputDir)
             val once = AtomicBoolean()
             variant.outputs.all { output ->
                 // Though there might be multiple outputs, their R files are all the same. Thus, we only
@@ -82,7 +81,9 @@ class HelperPlugin : Plugin<Project> {
                             })
                             .builtBy(processResources)
 
-                    val projectDir = File(project.projectDir.parent)
+                    if(IS_DEBUG)
+                        println("projectdir ${project.projectDir}")
+                    val projectDir = project.projectDir
                     var foundPath = ""
                     projectDir.walk().forEach {
                         if(it.absolutePath.contains("compile_and_runtime_not_namespaced_r_class_jar")
@@ -106,6 +107,7 @@ class HelperPlugin : Plugin<Project> {
                         it.packageName = rPackage
                         it.className = "LR"
                         it.variant = variant.baseName
+                        it.projectDir = projectDir.absolutePath
                     }
                     variant.registerJavaGeneratingTask(generate, outputDir)
                 }

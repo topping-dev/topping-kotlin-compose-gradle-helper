@@ -29,10 +29,13 @@ open class LRGenerator : DefaultTask() {
     @get:Input
     var variant: String? = null
 
+    @get:Input
+    var projectDir: String? = null
+
     @Suppress("unused") // Invoked by Gradle.
     @TaskAction
     fun brewJava() {
-        brewJava(rFile!!.singleFile, outputDir!!, packageName!!, className!!, buildDir!!, variant!!)
+        brewJava(rFile!!.singleFile, outputDir!!, packageName!!, className!!, buildDir!!, variant!!, projectDir!!)
     }
 }
 
@@ -42,23 +45,23 @@ fun brewJava(
     packageName: String,
     className: String,
     buildDir: String,
-    variant: String
+    variant: String,
+    projectDir: String
 ) {
     /*FinalLRClassBuilder(packageName, className)
         .also { ResourceSymbolListReader(it).readSymbolTable(rFile) }
         .build()
         .writeTo(outputDir)*/
-    //${projectDir}/parser.jar 2 ${buildDir}/intermediates/compile_and_runtime_not_namespaced_r_class_jar/" + outputType + "/R.jar ${buildDir}/generated/toppingresource/ " + applicationId + ".R"
-    //DocumentParser.ResourceLoader("${buildDir}/intermediates/compile_and_runtime_not_namespaced_r_class_jar/${variant}/R.jar", true, "${packageName}.R")
-    //println("path " + "${buildDir}/${variant}/R.jar")
-    val intermediates = File(buildDir).parent
-    val build = File(intermediates).parent
-    val possibleAndroidModuleDir = File(build).parent
-    val possibleAndroidModuleOutput = Paths.get(possibleAndroidModuleDir, "build", "generated", "toppingresource")
-    val possibleAndroidModule = Paths.get(possibleAndroidModuleDir).fileName
-    //println("classname " + "${packageName}.${possibleAndroidModule}.R")
-    //DocumentParser.outputFolder = outputDir.absolutePath
-    DocumentParser.outputFolder = possibleAndroidModuleOutput.absolutePathString()
-    //println("outputpath " + DocumentParser.outputFolder)
-    DocumentParser.ResourceLoader("${buildDir}/${variant}/R.jar", true, "${packageName}.${possibleAndroidModule}.R")
+    if(IS_DEBUG) {
+        println(buildDir)
+        println(variant)
+        println("path " + "${buildDir}/${variant}/R.jar")
+    }
+    val outputDir = Paths.get(projectDir, "build", "generated", "toppingresource")
+    if(IS_DEBUG) {
+        println("outputDir $outputDir")
+        println("classname " + "${packageName}.R")
+    }
+    DocumentParser.outputFolder = outputDir.absolutePathString()
+    DocumentParser.ResourceLoader("${buildDir}/${variant}/R.jar", true, "${packageName}.R")
 }
